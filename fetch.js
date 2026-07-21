@@ -16,7 +16,7 @@ const userInfoFetcher = (token) => {
                   contributionsCollection {
                     totalCommitContributions
                   }
-                  repositoriesContributedTo(first: 1, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]) {
+                  repositoriesContributedTo(first: 1) {
                     totalCount
                   }
                   pullRequests(first: 1) {
