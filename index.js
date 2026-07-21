@@ -3,7 +3,7 @@
 
 require('dotenv').config();
 const { request } = require('@octokit/request');
-const { userInfoFetcher, totalCommitsFetcher } = require('./fetch');
+const { userInfoFetcher, totalCommitsFetcher, contributedToFetcher } = require('./fetch');
 const numeral = require('numeral');
 
 const gistId = process.env.GIST_ID;
@@ -45,7 +45,9 @@ async function getStats() {
     stats.name = user.name || user.login;
     stats.totalPRs = user.pullRequests.totalCount;
     stats.totalIssues = user.issues.totalCount;
-    stats.contributedTo = user.repositoriesContributedTo.totalCount;
+    stats.contributedTo = await contributedToFetcher(githubToken).then(
+        (res) => res.data.data.viewer.repositoriesContributedTo.totalCount
+    );
     stats.totalStars = user.repositories.nodes.reduce((prev, curr) => {
         return prev + curr.stargazers.totalCount;
     }, 0);

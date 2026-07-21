@@ -16,9 +16,6 @@ const userInfoFetcher = (token) => {
                   contributionsCollection {
                     totalCommitContributions
                   }
-                  repositoriesContributedTo(first: 1) {
-                    totalCount
-                  }
                   pullRequests(first: 1) {
                     totalCount
                   }
@@ -52,7 +49,29 @@ const totalCommitsFetcher = async (login, token) => {
     }).then((res) => res.data.total_count);
 };
 
+// 활동량 많은 계정에서 메인 쿼리와 합치면 RESOURCE_LIMITS_EXCEEDED가 나서 분리 조회
+const contributedToFetcher = (token) => {
+    return axios({
+        url: 'https://api.github.com/graphql',
+        method: 'post',
+        headers: {
+            Authorization: `bearer ${token}`,
+        },
+        data: {
+            query: `
+              query contributedTo {
+                viewer {
+                  repositoriesContributedTo(first: 1, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]) {
+                    totalCount
+                  }
+                }
+              }`,
+        },
+    });
+};
+
 module.exports = {
     userInfoFetcher,
     totalCommitsFetcher,
+    contributedToFetcher,
 };
